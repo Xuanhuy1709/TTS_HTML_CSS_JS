@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>FormForm_Validation</title>
+    <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Đăng ký tài khoản</h2>
+
+    <div class="form-group">
+        <label>Họ tên</label>
+        <input type="text" id="fullname">
+        <div class="error-msg">Họ tên không được để trống</div>
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input type="text" id="email">
+        <div class="error-msg">Email không hợp lệ</div>
+    </div>
+
+    <div class="form-group">
+        <label>Số điện thoại</label>
+        <input type="text" id="phone">
+        <div class="error-msg">Số điện thoại không hợp lệ</div>
+    </div>
+
+    <div class="form-group">
+        <label>Mật khẩu</label>
+        <input type="password" id="password">
+        <div class="error-msg">
+            Mật khẩu ≥ 8 ký tự, có chữ hoa, thường, số, ký tự đặc biệt
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Xác nhận mật khẩu</label>
+        <input type="password" id="confirm_password">
+        <div class="error-msg">Mật khẩu không khớp</div>
+    </div>
+
+    <button id="submitBtn">Đăng ký</button>
+
+    <pre id="result"></pre>
+</div>
+
+<script>
+$(document).ready(function () {
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^(0|\+84)[0-9]{9}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+    function showError(input, show) {
+        const msg = input.next(".error-msg");
+        if (show) {
+            input.addClass("error");
+            msg.show();
+        } else {
+            input.removeClass("error");
+            msg.hide();
+        }
+    }
+
+    $("#fullname").on("input", function () {
+        showError($(this), $(this).val().trim() === "");
+    });
+
+    $("#email").on("input", function () {
+        showError($(this), !emailRegex.test($(this).val()));
+    });
+
+    $("#phone").on("input", function () {
+        showError($(this), !phoneRegex.test($(this).val()));
+    });
+
+    $("#password").on("input", function () {
+        showError($(this), !passwordRegex.test($(this).val()));
+    });
+
+    $("#confirm_password").on("input", function () {
+        showError($(this), $(this).val() !== $("#password").val());
+    });
+
+    $("#submitBtn").click(function () {
+        let valid = true;
+
+        $("input").each(function () {
+            $(this).trigger("input");
+            if ($(this).hasClass("error")) valid = false;
+        });
+
+        if (valid) {
+            const data = {
+                fullname: $("#fullname").val(),
+                email: $("#email").val(),
+                phone: $("#phone").val(),
+                password: $("#password").val()
+            };
+
+            $("#result")
+                .text(JSON.stringify(data, null, 4))
+                .show();
+        } else {
+            $("#result").hide();
+        }
+    });
+
+});
+</script>
+
+</body>
+</html>
