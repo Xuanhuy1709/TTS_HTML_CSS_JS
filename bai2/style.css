@@ -82,7 +82,11 @@ li span {
     color: white;
     font-size: 12px;
 }
-
+.edit-btn{
+    background: yellow;
+    color: black;
+    font-size: 12px;
+}
 .edit-input {
     flex: 1;
     padding: 6px;
