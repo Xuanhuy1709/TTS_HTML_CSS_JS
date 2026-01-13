@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Countdown Timer</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Đếm ngược đến ngày ra mắt</h2>
+
+    <div class="timer">
+        <div class="time-box">
+            <div class="number" id="days">0</div>
+            <div class="label">Ngày</div>
+        </div>
+        <div class="time-box">
+            <div class="number" id="hours">0</div>
+            <div class="label">Giờ</div>
+        </div>
+        <div class="time-box">
+            <div class="number" id="minutes">0</div>
+            <div class="label">Phút</div>
+        </div>
+        <div class="time-box">
+            <div class="number" id="seconds">0</div>
+            <div class="label">Giây</div>
+        </div>
+    </div>
+</div>
+
+
+<div class="overlay" id="popup">
+    <div class="popup">
+        <h3> Sự kiện bắt đầu!</h3>
+        <button id="closePopup">Đóng</button>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    const targetDate = new Date("2026-01-13T15:20:11").getTime();
+
+    const timer = setInterval(function () {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        if (distance <= 0) {
+            clearInterval(timer);
+
+            $("#days, #hours, #minutes, #seconds").text(0);
+            $("#popup").fadeIn();
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        $("#days").text(days);
+        $("#hours").text(hours);
+        $("#minutes").text(minutes);
+        $("#seconds").text(seconds);
+
+    }, 1000);
+
+    $("#closePopup").click(function () {
+        $("#popup").fadeOut();
+    });
+
+});
+</script>
+
+</body>
+</html>
