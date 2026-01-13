@@ -65,7 +65,7 @@ $(document).ready(function () {
                 renderTodos();
             });
 
-            li.find("span").dblclick(function () {
+            li.find("span").click(function () {
                 const input = $(`<input class="edit-input" type="text" value="${todo.text}">`);
                 $(this).replaceWith(input);
                 input.focus();
