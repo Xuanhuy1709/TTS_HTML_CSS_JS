@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bảng nhân viên</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Danh sách nhân viên</h2>
+
+    <input type="text" id="search" placeholder="Tìm theo tên,email hoặc tuổi...">
+
+    <table>
+        <thead>
+            <tr>
+                <th data-key="name">Tên</th>
+                <th data-key="age">Tuổi</th>
+                <th data-key="department">Phòng ban</th>
+                <th data-key="email">Email</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+<script>
+$(document).ready(function () {
+
+    let employees = [
+        { name: "Nguyễn Văn HUy", age: 25, department: "IT", email: "amazinglu8@gmail.com" },
+        { name: "Trần Thị Hường", age: 30, department: "HR", email: "viological@gmail.com" },
+        { name: "Lê Văn Đạt", age: 28, department: "Marketing", email: "kittycat@gmail.com" },
+        { name: "Phạm Thị Dung", age: 22, department: "IT", email: "dignity89@gmail.com" },
+        { name: "Hoàng Văn Hiếu", age: 35, department: "Sales", email: "stone1705@gmail.com" }
+    ];
+
+    let sortAsc = true;
+    let currentKey = "";
+
+    function renderTable(data) {
+        let html = "";
+        data.forEach(emp => {
+            html += `
+                <tr>
+                    <td>${emp.name}</td>
+                    <td>${emp.age}</td>
+                    <td>${emp.department}</td>
+                    <td>${emp.email}</td>
+                </tr>
+            `;
+        });
+        $("#tableBody").html(html);
+    }
+
+    renderTable(employees);
+
+    $("#search").on("input", function () {
+        const keyword = $(this).val().toLowerCase();
+        const filtered = employees.filter(emp =>
+            String(emp.age).includes(keyword) ||
+            emp.name.toLowerCase().includes(keyword) ||
+            emp.email.toLowerCase().includes(keyword)
+        );
+        renderTable(filtered);
+    });
+
+    $("th").click(function () {
+        const key = $(this).data("key");
+
+        sortAsc = (currentKey === key) ? !sortAsc : true;
+        currentKey = key;
+
+        employees.sort((a, b) => {
+            if (a[key] < b[key]) return sortAsc ? -1 : 1;
+            if (a[key] > b[key]) return sortAsc ? 1 : -1;
+            return 0;
+        });
+
+        renderTable(employees);
+    });
+
+});
+</script>
+</body>
+</html>
