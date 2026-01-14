@@ -1,0 +1,93 @@
+
+body{
+    font-family: Verdana, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+}
+*{ box-sizing: border-box; }
+
+h2{ text-align:center; margin: 20px 0; }
+
+.row{ width: 100%; }
+.column{
+    float: left;
+    width: 25%;
+    padding: 8px;
+}
+.thumb{
+    width: 100%;
+    cursor: pointer;
+    border: 2px solid #eee;
+}
+
+.modal{
+    display: none;
+    position: fixed;
+    left: 0; top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    overflow: auto;
+    padding-top: 80px;
+}
+
+.modal-content{
+    position: relative;
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    background: #fff;
+    padding: 0;
+}
+.close{
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    color: white;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.mySlide{
+    position: relative;
+    background: black;
+}
+.mySlide img{
+    width: 100%;
+    display: block;
+}
+
+.numbertext{
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    font-size: 12px;
+    padding: 8px 12px;
+    background: rgba(0,0,0,0.4);
+}
+
+.prev, .next{
+    position: absolute;
+    top: 50%;
+    margin-top: 22px;
+    padding: 12px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    background: rgba(0,0,0,0.35);
+}
+.prev{ left: 0; }
+.next{ right: 0; }
+
+.caption{
+    background: black;
+    color: white;
+    text-align: center;
+    padding: 8px;
+    font-size: 14px;
+}
