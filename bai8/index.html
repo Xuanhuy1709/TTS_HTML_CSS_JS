@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz App</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <h2>Quiz App</h2>
+
+    <div class="top">
+      <div id="progress">Câu 1/1</div>
+    </div>
+
+    <div id="quizArea">
+      <div class="question" id="questionText"></div>
+
+      <div class="answers" id="answersBox"></div>
+
+      <div class="msg" id="msg"></div>
+
+      <div class="btnbar">
+        <button id="btnNext">Câu tiếp theo</button>
+        <button id="btnRestart">Làm lại</button>
+      </div>
+    </div>
+
+    <div class="result" id="resultBox">
+      <h3>Kết quả</h3>
+      <p id="finalText"></p>
+      <button id="btnRestart2">Làm lại</button>
+    </div>
+  </div>
+
+<script>
+$(document).ready(function () {
+  var questions = [
+    {
+      question: "HTML là viết tắt của gì?",
+      answers: ["Hyper Text Markup Language", "High Text Machine Language", "Hyperlinks Text Mark Language", "Home Tool Markup Language"],
+      correctIndex: 0
+    },
+    {
+      question: "CSS dùng để làm gì?",
+      answers: ["Tạo cấu trúc trang", "Tạo database", "Chạy server","Tạo style (màu sắc, bố cục)"],
+      correctIndex: 3
+    },
+    {
+      question: "jQuery giúp gì cho JavaScript?",
+      answers: ["Làm web chạy nhanh hơn 10 lần", "Thay thế HTML", "Viết JS ngắn hơn khi thao tác DOM/event","Tạo API tự động"],
+      correctIndex: 2
+    }
+  ];
+
+  var index = 0;
+  var score = 0;
+  var selected = null;
+  var locked = false; 
+
+  function renderQuestion(){
+    selected = null;
+    locked = false;
+    $("#msg").text("");
+
+    var q = questions[index];
+    $("#progress").text("Câu " + (index + 1) + "/" + questions.length);
+    $("#questionText").text(q.question);
+
+    var html = "";
+    for(var i=0; i<q.answers.length; i++){
+      html += `
+        <label data-index="${i}">
+          <input type="radio" name="answer" value="${i}">
+          ${q.answers[i]}
+        </label>
+      `;
+    }
+    $("#answersBox").removeClass("disabled").html(html);
+
+    if(index === questions.length - 1) $("#btnNext").text("Nộp bài");
+    else $("#btnNext").text("Câu tiếp theo");
+  }
+
+  $(document).on("change", "input[name='answer']", function(){
+    if(locked) return;
+    selected = parseInt($(this).val(), 10);
+  });
+
+  function gradeAndGoNext(){
+    if(locked) return;
+
+    if(selected === null){
+      $("#msg").text("Bạn cần chọn 1 đáp án trước!");
+      return;
+    }
+
+    locked = true;
+    $("#answersBox").addClass("disabled"); 
+
+    var q = questions[index];
+
+    $("#answersBox label[data-index='" + q.correctIndex + "']").addClass("correct");
+
+    if(selected !== q.correctIndex){
+      $("#answersBox label[data-index='" + selected + "']").addClass("wrong");
+    } else {
+      score++;
+    }
+
+    setTimeout(function(){
+      index++;
+      if(index >= questions.length){
+        showResult();
+      }else{
+        renderQuestion();
+      }
+    }, 1000);
+  }
+
+  $("#btnNext").click(gradeAndGoNext);
+
+  // ====== Kết quả ======
+  function showResult(){
+    $("#quizArea").hide();
+    $("#resultBox").show();
+    $("#finalText").text("Bạn đúng " + score + "/" + questions.length + " câu.");
+  }
+
+  function restart(){
+    index = 0;
+    score = 0;
+    selected = null;
+    locked = false;
+    $("#resultBox").hide();
+    $("#quizArea").show();
+    renderQuestion();
+  }
+
+  $("#btnRestart, #btnRestart2").click(restart);
+
+  renderQuestion();
+});
+</script>
+
+</body>
+</html>

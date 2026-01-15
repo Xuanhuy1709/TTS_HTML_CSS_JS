@@ -1,0 +1,95 @@
+
+*{ box-sizing: border-box; }
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f8;
+    margin:0;
+    padding:20px;
+}
+.container{
+    max-width: 650px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px;
+}
+h2{ margin: 0 0 12px; text-align:center; }
+
+.top{
+    display:flex;
+    justify-content: flex-start;
+    align-items:center;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color:#333;
+}
+
+.question{
+    font-size: 18px;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+.answers label{
+    display:block;
+    padding:12px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    background:#fafafa;
+}
+.answers label:hover{
+background:#f0f6ff;
+border-color:#007bff;
+}
+
+/* Khi disabled thì hover không còn đổi màu */
+.disabled label:hover{
+background:#fafafa;
+border-color:#ddd;
+}
+
+/* correct/wrong không cần important */
+.answers label.correct{
+background:#e8fff0;
+border-color:#28a745;
+}
+.answers label.wrong{
+background:#ffecec;
+border-color:#dc3545;
+}
+
+
+.btnbar{
+    margin-top: 12px;
+    display:flex;
+    gap:10px;
+}
+button{
+    border: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+#btnNext{ background:#007bff; color:#fff; flex:1; }
+#btnRestart{ background:#eee; }
+
+.msg{
+    margin-top: 10px;
+    font-size: 14px;
+    color:#d00;
+    min-height: 18px;
+}
+
+.result{
+    display:none;
+    text-align:center;
+    padding: 14px;
+    border-radius: 10px;
+    background:#f7fff4;
+    border: 1px solid #b7f0b0;
+    margin-top: 12px;
+}
