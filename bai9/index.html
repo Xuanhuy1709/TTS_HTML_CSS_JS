@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Bài 9 - Currency Converter</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;
+        padding:20px;
+        font-family:Arial,sans-serif;
+        background:#f4f6f8}
+    .container{max-width:720px;margin:0 auto;background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px}
+    h2{margin:0 0 14px;text-align:center}
+
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+    .field{flex:1;min-width:200px}
+    label{display:block;margin:0 0 6px;font-size:13px;font-weight:700;color:#333}
+    input,select{width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:10px;font-size:14px;outline:0;background:#fff}
+
+    .swap{width:46px;height:42px;border:0;border-radius:10px;background:#eee;cursor:pointer;font-size:18px;font-weight:700}
+    .swap:hover{opacity:.9}
+
+    #status{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;border:1px solid #bcd7ff;background:#f0f6ff;color:#0b57d0;font-size:14px}
+    #status.error{border-color:#ffb3b3;background:#ffecec;color:#b42318}
+
+    .result{margin-top:12px;border:1px solid #eee;border-radius:12px;background:#fafafa;padding:14px;min-height:86px}
+    .big{margin:0 0 8px;font-size:20px;font-weight:700}
+    .small{margin:0;color:#555;font-size:13px;line-height:1.5}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Currency Converter</h2>
+
+    <div class="row">
+      <div class="field">
+        <label>Số tiền</label>
+        <input id="amount" type="text" value="1" placeholder="VD: 100 hoặc 1,5" />
+      </div>
+
+      <div class="field">
+        <label>Từ</label>
+        <select id="from"></select>
+      </div>
+
+      <button id="swap" class="swap" type="button" title="Đổi chiều">⇄</button>
+
+      <div class="field">
+        <label>Sang</label>
+        <select id="to"></select>
+      </div>
+    </div>
+
+    <div id="status"></div>
+
+    <div class="result">
+      <p class="big" id="resultText">—</p>
+      <p class="small" id="rateText">—</p>
+      <p class="small" id="timeText"></p>
+    </div>
+  </div>
+
+<script>
+$(function(){
+  var API = "https://open.er-api.com/v6/latest/";
+  var cacheBase = "", cacheRates = null, cacheTime = "";
+
+  function status(msg, err){
+    if(!msg) return $("#status").hide().removeClass("error").text("");
+    $("#status").show().toggleClass("error", !!err).text(msg);
+  }
+
+  function num(raw){
+    raw = String(raw||"").trim().replace(/\s+/g,"").replace(",",".");
+    var n = parseFloat(raw);
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  function fmt(n, cur){
+    if(!Number.isFinite(n)) return "—";
+    return new Intl.NumberFormat("vi-VN", {
+      maximumFractionDigits: (cur==="VND") ? 0 : 6
+    }).format(n);
+  }
+
+  function loadRates(base){
+    if(base === cacheBase && cacheRates) return $.Deferred().resolve().promise();
+    return $.getJSON(API + encodeURIComponent(base)).then(function(d){
+      if(!d || d.result!=="success" || !d.rates) throw new Error("API lỗi/không hợp lệ");
+      cacheBase = base;
+      cacheRates = d.rates;
+      cacheTime = d.time_last_update_utc || "";
+    });
+  }
+
+  function buildSelects(rates){
+    var codes = Object.keys(rates).sort();
+    $("#from, #to").empty();
+    codes.forEach(function(c){
+      $("#from").append('<option value="'+c+'">'+c+'</option>');
+      $("#to").append('<option value="'+c+'">'+c+'</option>');
+    });
+    $("#from").val("USD");
+    $("#to").val("VND");
+  }
+
+  function convert(){
+    var amount = num($("#amount").val());
+    var from = $("#from").val();
+    var to = $("#to").val();
+    if(!from || !to) return;
+
+    if(!Number.isFinite(amount)){
+      $("#resultText").text("Nhập số tiền hợp lệ");
+      $("#rateText").text("—");
+      $("#timeText").text("");
+      return;
+    }
+
+    if(from === to){
+      $("#resultText").text(fmt(amount,to) + " " + to);
+      $("#rateText").text("Tỷ giá: 1 " + from + " = 1 " + to);
+      $("#timeText").text("");
+      return status("");
+    }
+
+    status("Đang lấy tỷ giá...");
+
+    loadRates(from)
+      .then(function(){
+        var rate = cacheRates[to];
+        if(!Number.isFinite(rate)) throw new Error("Không có tỷ giá cho cặp này");
+        var out = amount * rate;
+
+        $("#resultText").text(fmt(out,to) + " " + to);
+        $("#rateText").text("Tỷ giá: 1 " + from + " = " + fmt(rate,to) + " " + to);
+        $("#timeText").text(cacheTime ? ("Cập nhật: " + cacheTime) : "");
+        status("");
+      })
+      .catch(function(e){
+        status(e.message || "Lỗi khi gọi API", true);
+      });
+  }
+
+  status("Đang tải danh sách tiền tệ...");
+  $.getJSON(API + "USD")
+    .then(function(d){
+      if(!d || d.result!=="success" || !d.rates) throw new Error();
+      cacheBase = "USD";
+      cacheRates = d.rates;
+      cacheTime = d.time_last_update_utc || "";
+      buildSelects(d.rates);
+      status("");
+      convert();
+    })
+    .catch(function(){
+      status("Không tải được dữ liệu. Hãy thử F5 lại.", true);
+    });
+
+  $("#amount").on("input", convert);
+  $("#from, #to").on("change", convert);
+
+  $("#swap").on("click", function(){
+    var a = $("#from").val(), b = $("#to").val();
+    $("#from").val(b); $("#to").val(a);
+    convert();
+  });
+});
+</script>
+</body>
+</html>
